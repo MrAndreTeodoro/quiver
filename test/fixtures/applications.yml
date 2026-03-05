@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  job_offer: one
+  cv_markdown: MyText
+  cover_letter_markdown: MyText
+  cv_docx_path: MyString
+  cv_pdf_path: MyString
+  cv_md_path: MyString
+  cover_letter_docx_path: MyString
+  cover_letter_pdf_path: MyString
+  cover_letter_md_path: MyString
+  generated_at: 2026-03-04 16:28:17
+  applied_at: 2026-03-04 16:28:17
+  application_status: MyString
+  notes: MyText
+
+two:
+  job_offer: two
+  cv_markdown: MyText
+  cover_letter_markdown: MyText
+  cv_docx_path: MyString
+  cv_pdf_path: MyString
+  cv_md_path: MyString
+  cover_letter_docx_path: MyString
+  cover_letter_pdf_path: MyString
+  cover_letter_md_path: MyString
+  generated_at: 2026-03-04 16:28:17
+  applied_at: 2026-03-04 16:28:17
+  application_status: MyString
+  notes: MyText

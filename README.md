@@ -28,7 +28,7 @@ A local Rails application that takes the grunt work out of job applications. Pas
 
 ## Tech Stack
 
-- **Ruby on Rails 7** — framework
+- **Ruby on Rails 8** — framework
 - **SQLite3** — local database
 - **TailwindCSS** — styling
 - **ruby_llm** — AI model integration
@@ -41,8 +41,8 @@ A local Rails application that takes the grunt work out of job applications. Pas
 
 ## Requirements
 
-- Ruby 3.2+
-- Node.js 18+
+- Ruby 4.0+
+- Node.js 20+
 - An Anthropic API key
 
 ---

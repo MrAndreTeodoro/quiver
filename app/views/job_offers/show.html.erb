@@ -1,0 +1,168 @@
+<div class="mb-6">
+  <%= link_to job_offers_path, class: "text-sm text-blue-600 hover:text-blue-900" do %>
+    ← Back to Job Offers
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <%# Left Column - Job Details (60%) %>
+  <div class="lg:col-span-2 space-y-6">
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900"><%= @job_offer.parsed_title.presence || "Untitled Position" %></h1>
+          <p class="text-lg text-gray-600 mt-1"><%= @job_offer.parsed_company.presence || "Unknown Company" %></p>
+          <% if @job_offer.parsed_location.present? %>
+            <p class="text-sm text-gray-500 mt-1"><%= @job_offer.parsed_location %></p>
+          <% end %>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
+            <%= case @job_offer.status
+                when 'pending' then 'bg-gray-100 text-gray-800'
+                when 'parsed' then 'bg-yellow-100 text-yellow-800'
+                when 'scored' then 'bg-blue-100 text-blue-800'
+                when 'generated' then 'bg-green-100 text-green-800'
+                when 'skipped' then 'bg-red-100 text-red-800'
+                end %>">
+            <%= @job_offer.status %>
+          </span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+            <%= @job_offer.source_type %>
+          </span>
+        </div>
+      </div>
+
+      <% if @job_offer.parsed_summary.present? %>
+        <div class="mt-6">
+          <h3 class="text-sm font-medium text-gray-900 uppercase tracking-wide mb-2">Summary</h3>
+          <p class="text-gray-600 text-sm leading-relaxed"><%= @job_offer.parsed_summary %></p>
+        </div>
+      <% end %>
+
+      <% if @job_offer.parsed_requirements.present? %>
+        <div class="mt-6">
+          <h3 class="text-sm font-medium text-gray-900 uppercase tracking-wide mb-2">Requirements</h3>
+          <div class="prose prose-sm max-w-none text-gray-600">
+            <%= render_markdown(@job_offer.parsed_requirements) %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @job_offer.parsed_skills_array.any? %>
+        <div class="mt-6">
+          <h3 class="text-sm font-medium text-gray-900 uppercase tracking-wide mb-2">Skills</h3>
+          <div class="flex flex-wrap gap-2">
+            <% @job_offer.parsed_skills_array.each do |skill| %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-gray-100 text-gray-800">
+                <%= skill %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="mt-6 pt-6 border-t border-gray-200 flex space-x-3">
+        <%= button_to parse_job_offer_path(@job_offer), class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="mr-2 -ml-1 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Re-parse
+        <% end %>
+        <%= button_to score_job_offer_path(@job_offer), class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="mr-2 -ml-1 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Re-score
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Right Column - Fit Score (40%) %>
+  <div class="space-y-6">
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Fit Analysis</h2>
+
+      <% if @job_offer.fit_score.present? %>
+        <% score_color = @job_offer.fit_score < 50 ? 'text-red-600' : @job_offer.fit_score < 65 ? 'text-yellow-600' : 'text-green-600' %>
+        
+        <div class="text-center mb-6">
+          <div class="text-5xl font-bold <%= score_color %>"><%= @job_offer.fit_score.round(1) %></div>
+          <div class="text-sm text-gray-500 mt-1">out of 100</div>
+        </div>
+
+        <% if @job_offer.fit_reasoning.present? %>
+          <div class="mb-6">
+            <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Reasoning</h3>
+            <p class="text-sm text-gray-600"><%= @job_offer.fit_reasoning %></p>
+          </div>
+        <% end %>
+
+        <% if @job_offer.fit_strengths_array.any? %>
+          <div class="mb-6">
+            <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Strengths</h3>
+            <ul class="space-y-2">
+              <% @job_offer.fit_strengths_array.each do |strength| %>
+                <li class="flex items-start text-sm text-gray-600">
+                  <svg class="flex-shrink-0 mr-2 h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <%= strength %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if @job_offer.fit_gaps_array.any? %>
+          <div class="mb-6">
+            <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Gaps</h3>
+            <ul class="space-y-2">
+              <% @job_offer.fit_gaps_array.each do |gap| %>
+                <li class="flex items-start text-sm text-gray-600">
+                  <svg class="flex-shrink-0 mr-2 h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                  <%= gap %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <% if @job_offer.application %>
+            <%= link_to application_path(@job_offer.application), class: "w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+              <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              View Application
+            <% end %>
+          <% elsif @job_offer.above_threshold? %>
+            <%= button_to generate_job_offer_path(@job_offer), class: "w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Generate Documents
+            <% end %>
+          <% else %>
+            <div class="text-center py-4 bg-gray-50 rounded-md">
+              <p class="text-sm text-gray-500">Below threshold (<%= JobOffer::FIT_THRESHOLD %>) — generation disabled</p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <p class="mt-2 text-sm text-gray-500">Score this job offer to see fit analysis</p>
+          <%= button_to score_job_offer_path(@job_offer), class: "mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            Score Now
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

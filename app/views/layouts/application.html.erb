@@ -11,21 +11,78 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <%# Left Sidebar %>
+      <aside class="w-56 bg-white border-r border-gray-200 flex-shrink-0">
+        <div class="p-4">
+          <h1 class="text-xl font-bold text-gray-900 mb-6">Quiver</h1>
+          
+          <nav class="space-y-1">
+            <%= link_to job_offers_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-md #{current_page?(job_offers_path) || current_page?(root_path) ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <svg class="mr-3 h-5 w-5 flex-shrink-0 #{current_page?(job_offers_path) || current_page?(root_path) ? 'text-blue-500' : 'text-gray-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Job Offers
+            <% end %>
+            
+            <%= link_to profile_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-md #{current_page?(profile_path) ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <svg class="mr-3 h-5 w-5 flex-shrink-0 #{current_page?(profile_path) ? 'text-blue-500' : 'text-gray-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Profile
+            <% end %>
+          </nav>
+        </div>
+      </aside>
+
+      <%# Main Content %>
+      <main class="flex-1 overflow-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <%# Flash Messages %>
+          <% if flash[:notice] %>
+            <div class="mb-4 rounded-md bg-green-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-green-800"><%= flash[:notice] %></p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <% if flash[:alert] %>
+            <div class="mb-4 rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-red-800"><%= flash[:alert] %></p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <%= yield %>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

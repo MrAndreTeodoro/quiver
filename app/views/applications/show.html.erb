@@ -1,0 +1,161 @@
+<div class="mb-6">
+  <%= link_to job_offer_path(@application.job_offer), class: "text-sm text-blue-600 hover:text-blue-900 inline-flex items-center" do %>
+    <svg class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    Back to Job Offer
+  <% end %>
+</div>
+
+<div class="mb-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900"><%= @application.job_offer.parsed_title %></h1>
+      <p class="text-lg text-gray-600"><%= @application.job_offer.parsed_company %></p>
+    </div>
+    <div class="text-right">
+      <p class="text-sm text-gray-500">Generated <%= @application.generated_at&.strftime("%Y-%m-%d %H:%M") || "-" %></p>
+      <% if @application.job_offer.above_threshold? %>
+        <%= link_to generate_job_offer_path(@application.job_offer), 
+            data: { turbo_method: :post },
+            class: "mt-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="mr-1.5 -ml-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Regenerate Docs
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <%# Application Status Card %>
+  <div class="lg:col-span-1">
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Application Status</h2>
+      
+      <%= form_with model: @application, class: "space-y-5" do |f| %>
+        <div class="space-y-2">
+          <%= f.label :application_status, "Status", class: "block text-sm font-semibold text-gray-700" %>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <%= f.select :application_status, 
+                Application.application_statuses.keys.map { |k| [k.to_s.humanize, k] },
+                {},
+                class: "block w-full pl-10 pr-10 py-3 border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-150 ease-in-out appearance-none bg-white sm:text-sm cursor-pointer" %>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <%= f.label :applied_at, "Applied At", class: "block text-sm font-semibold text-gray-700" %>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <%= f.date_field :applied_at, 
+                class: "block w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-150 ease-in-out sm:text-sm cursor-pointer" %>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <%= f.label :notes, "Notes", class: "block text-sm font-semibold text-gray-700" %>
+          <%= f.text_area :notes, 
+              rows: 4, 
+              class: "block w-full p-4 border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-150 ease-in-out sm:text-sm resize-y min-h-[100px]",
+              placeholder: "Add any notes about this application (interview dates, contact info, etc.)" %>
+        </div>
+
+        <div class="pt-2">
+          <%= f.submit "Save Changes", 
+              class: "w-full inline-flex justify-center items-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 ease-in-out",
+              data: { disable_with: "Saving..." } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Documents Section %>
+  <div class="lg:col-span-2 space-y-6">
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-gray-900">CV</h2>
+      </div>
+      
+      <% if @application.cv_markdown.present? %>
+        <div class="prose prose-sm max-w-none bg-gray-50 p-4 rounded-lg mb-4 max-h-96 overflow-y-auto border border-gray-200">
+          <%= render_markdown(@application.cv_markdown) %>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <%= link_to download_cv_md_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Markdown
+          <% end %>
+          <%= link_to download_cv_docx_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Word (DOCX)
+          <% end %>
+          <%= link_to download_cv_pdf_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            PDF
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm italic">No CV generated yet.</p>
+      <% end %>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Cover Letter</h2>
+      </div>
+      
+      <% if @application.cover_letter_markdown.present? %>
+        <div class="prose prose-sm max-w-none bg-gray-50 p-4 rounded-lg mb-4 max-h-96 overflow-y-auto border border-gray-200">
+          <%= render_markdown(@application.cover_letter_markdown) %>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <%= link_to download_cover_letter_md_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Markdown
+          <% end %>
+          <%= link_to download_cover_letter_docx_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Word (DOCX)
+          <% end %>
+          <%= link_to download_cover_letter_pdf_application_path(@application), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150" do %>
+            <svg class="mr-2 -ml-1 h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            PDF
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm italic">No cover letter generated yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
